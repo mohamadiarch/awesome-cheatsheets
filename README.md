@@ -127,6 +127,20 @@ Feel free to take a look. You might learn new things. They have been designed to
 - [Firebase CLI](tools/firebase_cli.md)
   </details>
 
+### 📟 Apps
+
+
+<details>
+<summary>View cheatsheets</summary>
+#### Apps
+
+- [Windows](apps/windows.md)
+- [obsidian](apps/obsidian.md)
+- [Chrome](apps/chrome.md)
+  </details>
+
+
+
 ## 🙌🏼 How to Contribute?
 
 You are more than welcome to contribute and build your own cheat sheet for your favorite programming language, framework or development tool. Just submit changes via pull request and I will review them before merging.
