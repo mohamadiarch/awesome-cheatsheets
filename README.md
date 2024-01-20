@@ -132,6 +132,7 @@ Feel free to take a look. You might learn new things. They have been designed to
 
 <details>
 <summary>View cheatsheets</summary>
+
 #### Apps
 
 - [Windows](apps/windows.md)
@@ -139,6 +140,16 @@ Feel free to take a look. You might learn new things. They have been designed to
 - [Chrome](apps/chrome.md)
   </details>
 
+### 📔 Lists
+
+
+<details>
+<summary>View cheatsheets</summary>
+
+#### Lists
+
+- [Learning List](lists/learningLits.md)
+  </details>
 
 
 ## 🙌🏼 How to Contribute?

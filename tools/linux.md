@@ -10,29 +10,52 @@ https://linuxcontainers.org/
 ## packages
 [[linux_packages]
 
-## apt
+
+## list of package managers
 ```bash
-apt --help        # list of commands are available do not worry
-apt list          # list of all packages
-apt list vim      #  find vim
-apt search vim    # find all packages like vim
-apt show vim      # description of vim  
+apt       # debian based   #.deb  # Ubuntu, Mint,kali, Debian, elementary OS, Zorin OS, BlackBox
+dnf  or yum        #Red Hat-base     #.rpm   # Fedora, CentOS, RHEL, Amazon Linux, Oracle Linux, openSUSE
+pacman    #Arch-based       #.rpm   # Arch Linux, Manjaro, EndeavourOS, ArcoLinux
+portage   #Gentoo-based     #.rpm   # Gentoo
+slackpkg,pkgtool   #Slackware-based    # Slackware
+snap     #cross-distribution
+flatpak   #cross-distribution
+AppImage   #cross-distribution
+zypper(ZYpp)    #openSUSE and SUSE Linux
+emerge
+synaptic      # graphical package manager
+# Many distributions offer graphical package managers (e.g., Ubuntu Software Center, GNOME Software)
+ ```
+
+## os
+```bash
+cat /etc/*release             # what distro we are running 
+lsb_release -a               # what distro we are running
+cat /etc/os-release          # what distro we are running
 ```
 
-## Command History
 
+## Doc
 ```bash
-!!            # Run the last command
-
-touch foo.sh
-chmod +x !$   # !$ is the last argument of the last command i.e. foo.sh
-```
-
-## Help
-```bash
+help                       # list of all commands + shell
+help cd                    # doc for cd command == cd --help
+help for                   #doc for for command in bash
+man -k print              # seacrh in commands and short descriptoin like grep    **
 man rsync| less -p -v     #search for -v flag in rsync command
 rsync -h| less -p -v      #search for -v flag in rsync command
 ```
+
+## WH
+```bash
+who
+whoami
+which
+whereis
+echo $USER    # display user
+logname       # 
+```
+
+
 
 ## List of commands
 ```bash
@@ -46,6 +69,66 @@ compgen -A function        # will list all the functions you could run.
 compgen -A function -abck  # will list all the above in one go.
 ```
 
+## apt
+```bash
+apt update                   # Refreshes repository index
+apt upgrade                  # Upgrades all upgradable packages
+apt search vim              # Search for a package in  internet
+apt search ^vim$             # apt search == google search
+apt-cache search vim               #like apt search vim
+apt show vim                # List information about the vim (no need to install)
+apt list          # list of all packages
+apt list vim                  # find
+apt list --all-versions wget # List all versions of the package
+apt list --installed          # List all installed packages
+apt list --upgradable         # List all upgradable packages
+apt list --all-versions        # This shows all available versions of each package
+apt install wget             # Install the latest version of the wget package
+apt install wget=1.2.3       # Install a specific version of the wget package
+apt remove wget              # Removes the wget package
+```
+
+
+## Command History
+
+```bash
+!!            # Run the last command
+touch foo.sh   # update timestamp of file exists
+chmod +x !$   # !$ is the last argument of the last command i.e. foo.sh
+```
+
+## Creating Files
+
+```bash
+touch foo.txt          # Create file or update(touch) existing files modified timestamp 
+touch foo.txt bar.txt  # Create multiple files
+touch {foo,bar}.txt    # Create multiple files
+touch test{1..3}       # Create test1, test2 and test3 files
+touch test{a..c}       # Create testa, testb and testc files
+mktemp                 # Create a temporary file
+```
+
+
+## Creating Directories
+
+```bash
+mkdir foo                        # Create a directory
+mkdir foo bar                    # Create multiple directories
+mkdir -p| --parents foo/bar       # Create nested directory
+mkdir -p| --parents {foo,bar}/baz # Create multiple nested directories
+touch a; mkdir a                  #create a as a file and gets error for directory
+mktemp -d| --directory            # Create a temporary directory
+```
+
+## Symbolic Links
+
+```bash
+ln -s| --symbolic 1.txt link.txt            # Create a link for 1.txt into link.txt. soft link = symbolic link
+ln -s| --symbolic -f| --force foo bar # Overwrite an existing symbolic link 'bar'
+ls -l                               # Show where symbolic links are pointing
+ln 1.txt hlink.txt                  # Create a hard link. change 1.txt will also change hlink.txt. but delete 1.txt will not delete hlink.txt
+```
+
 ## Navigating Directories
 
 ```bash
@@ -53,14 +136,23 @@ pwd                       # Print current directory path
 dir                       # like ls (diff in format)
 ls                        # List directories
 ls -a| --all               # List directories including hidden
+ls -d                     # List just directories
 ls -l                     # List directories in long form
 ls -l -h| --human-readable # List directories in long form with human readable sizes
+la -lhA                     # -A List but do not show current dir and its parent  ==> ll -A  != ls -a
+ls -lhS                    # -S List and Sort by size
+ls -lhSr                  # -Sr List and Sort then reverse
+ls -lhSX                  # -SX List and Sort by extension or format
+ls -lhSt                  # -St List and Sort by time
 ls -t                     # List directories by modification time, newest first
-ls foo                    # List directories inside foo
+ls folder                    # List files inside folder
+ll 1.txt                   # just info of 1.txt
 ls -c -ltd foo            # just info of specific folder
+file foo.txt              # simple file info ==> simple stat
 stat foo.txt              # List size, created and modified timestamps for a file
 stat foo                  # List size, created and modified timestamps for a directory
 tree                      # List directory and file tree
+ls -R                      # -R:recursive List inner folders like tree
 tree -a                   # List directory and file tree including hidden
 tree -d                   # List directory tree
 cd foo                    # Go to foo sub-directory
@@ -71,17 +163,42 @@ pushd foo                 # Go to foo sub-directory and add previous directory t
 popd                      # Go back to directory in stack saved by `pushd`
 ```
 
-## Creating Directories
-
+## ls -l cols
 ```bash
-mkdir foo                        # Create a directory
-mkdir foo bar                    # Create multiple directories
-mkdir -p| --parents foo/bar       # Create nested directory
-mkdir -p| --parents {foo,bar}/baz # Create multiple nested directories
-
-mktemp -d| --directory            # Create a temporary directory
+1. file type + file permissions
+3. number of hard links     # for files =1 for dir =2 
+4. owner
+5. group
+6. size                      # 4kb for empty folder
+7. last modified time
+8. name
 ```
 
+
+## wildcard
+
+```bash
+ll 1.js                  # just info of 1.js
+ls *.js                   # List all .js files
+ls *.???                  # List files with three chars in format like .txt
+ls [12].txt               # List files with numbers in format like 1.txt and 2.txt
+ls [!12].txt              # List files without this numbers
+ls [1-9].txt              # List files 1.txt through 9.txt
+```
+## Deleting Directories
+
+```bash
+rmdir foo                        # Delete empty directory (safe command)
+rm -r| --recursive foo            # Delete directory including contents
+rm -r| --recursive -f| --force foo # Delete directory including contents, ignore nonexistent files and never prompt
+```
+
+## Deleting Files
+
+```bash
+rm foo.txt            # Delete file
+rm -f| --force foo.txt # Delete file, ignore nonexistent files and never prompt
+```
 ## Moving Directories
 
 ```bash
@@ -98,82 +215,29 @@ rsync -avz /foo username@hostname:/bar                  # Copy local directory t
 rsync -avz username@hostname:/foo /bar                  # Copy remote directory to local directory
 ```
 
-## Deleting Directories
-
-```bash
-rmdir foo                        # Delete empty directory
-rm -r| --recursive foo            # Delete directory including contents
-rm -r| --recursive -f| --force foo # Delete directory including contents, ignore nonexistent files and never prompt
-```
-
-
-## Creating Files
-
-```bash
-touch foo.txt          # Create file or update existing files modified timestamp
-touch foo.txt bar.txt  # Create multiple files
-touch {foo,bar}.txt    # Create multiple files
-touch test{1..3}       # Create test1, test2 and test3 files
-touch test{a..c}       # Create testa, testb and testc files
-
-mktemp                 # Create a temporary file
-```
-
-## Standard Output, Standard Error and Standard Input
-
-```bash
-echo "foo" > bar.txt       # Overwrite file with content
-echo "foo" >> bar.txt      # Append to file with content
-
-ls exists 1> stdout.txt    # Redirect the standard output to a file
-ls noexist 2> stderror.txt # Redirect the standard error output to a file
-ls 2>&1 out.txt            # Redirect standard output and error to a file
-ls > /dev/null             # Discard standard output and error
-read foo                   # Read from standard input and write to the variable foo
-
-
-```
-
-## command combination
-```bash
-cmd1 ; cmd2 ; cmd3	# run multi commands 
-cmd1 && cmd2		# cmd2 runs if cmd1 runned success
-cmd1 || cmd2		# cmd2 runs if cmd1 NOT runned success
-cmd  > filename		# send output to filename (ovewwrite)
-cmd >> filename		# append output to filename
-cmd < filename		# send input data to cmd from filename
-
-```
-
 ## Moving Files
 
 ```bash
 cp foo.txt bar.txt                                # Copy file
 mv foo.txt bar.txt                                # Move file
-
+mv 1.txt 1new.txt                                  # Rename file
+# we do not have a command for renaming a file but we can move it
 rsync -z| --compress -v| --verbose /foo.txt /bar    # Copy file quickly if not changed
 rsync z| --compress -v| --verbose /foo.txt /bar.txt # Copy and rename file quickly if not changed
 ```
-
-## Deleting Files
-
-```bash
-rm foo.txt            # Delete file
-rm -f| --force foo.txt # Delete file, ignore nonexistent files and never prompt
-```
-
 ## Reading Files
 
 ```bash
 cat foo.txt            # Print all contents
+cat 1.txt 2.txt         # Print multiple files
 cat -b foo.txt         # show line number for cat
-less foo.txt           # Print some contents at a time (g - go to top of file, SHIFT+g, go to bottom of file, /foo to search for 'foo')
+open foo.txt           # Open file in the default editor
+less foo.txt           # Print some contents at a time (g: go to top of file, G: go to bottom of file, /foo: to search for 'foo')
+more foo.txt           # browse file in terminal with option more
 head foo.txt           # Print top 10 lines of file
 head foo.txt -n 200    # show 200 line
 tail foo.txt           # Print bottom 10 lines of file
-open foo.txt           # Open file in the default editor
 wc foo.txt             # List number of lines words and characters in the file
-more foo.txt           # browse file in terminal with option more
 file foo.txt           # file type
 cut -b 1,2,3 state.txt # cutting out the column of a file (slice a file)
 cut -b 1-3,5-7 foo.txt #slice with range
@@ -195,16 +259,44 @@ truncate -s 0 1.js              # empty file
 
 ```
 
-## WH
+
+## Standard Output, Standard Error and Standard Input
+
 ```bash
-who
-whoami
-which
-whereis
-echo $USER    # display user
-logname       # 
+echo "foo" > bar.txt       # Overwrite file with content (redirection mark)
+echo "foo" >> bar.txt      # Append to file with content
+ls xxxNO > 1.txt            # if xxxNO does not exist the contenet of 1.txt will be delete with nothing (standard output)
+ls exists 1> stdout.txt    # Redirect the standard output to a file (chanel 1)
+ls noexist 2> stderror.txt # Redirect the standard error output to a file (chanel 2)
+ls xxx 1> output.txt 2> error.txt
+ls xxx > output.txt 2> error.txt    #default output
+ls >out.txt 2>&1            # Send channel 2 in the same file as channel 1
+ls -lh > newfile.txt         #first create newfile.txt then run the command ls -h then write
+ls > /dev/null             # Discard standard output and error
+read foo                   # Read from standard input and write to the variable foo
 ```
 
+
+## Calculator
+```bash
+bc                          # basic calculator
+quit                        # not <C-c>
+echo "1 + 2" | bc           # use pipeline
+bc < foo.txt                # use file (4 +5 inside the foo.txt) input redirection
+```
+
+
+## command combination
+```bash
+cmd1 ; cmd2 ; cmd3	# run multi commands 
+cmd1 && cmd2		# cmd2 runs if cmd1 runned success
+cmd1 || cmd2		# cmd2 runs if cmd1 NOT runned success
+cmd  > filename		# send output to filename (ovewwrite)
+cmd >> filename		# append output to filename
+cmd < filename		# send input data to cmd from filename
+help | more
+echo "1.txt 2.txt" | xargs mkdir
+```
 
 ## File Permissions
 
@@ -397,19 +489,7 @@ cat /etc/shells                     # list of all shells
 cat /etc/services                   # list of all ports
 cat /etc/crontabs                   # list of all crontabs
 ```
-## Linux Directory
-```bash
 
-```
-
-
-## Symbolic Links
-
-```bash
-ln -s| --symbolic foo bar            # Create a link 'bar' to the 'foo' folder
-ln -s| --symbolic -f| --force foo bar # Overwrite an existing symbolic link 'bar'
-ls -l                               # Show where symbolic links are pointing
-```
 
 ## Compressing Files
 
@@ -604,7 +684,7 @@ killall foo            # Kill all process with the specified name gracefully.
 date                   # Print the date and time
 date --iso-8601        # Print the ISO8601 date
 date --iso-8601=ns     # Print the ISO8601 date and time
-cal                    # calender
+cal                    # calender ==> apt install ncal
 
 time tree              # Time how long the tree command takes to execute
 ```
@@ -858,7 +938,7 @@ greeting=$(greet "Hello")
 ```bash
 #!/bin/bash
 
-exit 0   # Exit the script successfully
+exit 0   # Exit the script successfully like return 0 in cpp
 exit 1   # Exit the script unsuccessfully
 echo $?  # Print the last exit code
 ```
