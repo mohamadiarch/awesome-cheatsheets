@@ -1,5 +1,7 @@
-I get this file from repo of someone else
-I will mention him later
+---
+source: https://github.com/RehanSaeed/Bash-Cheat-Sheet
+---
+
 # Bash Cheat Sheet
 
  A cheat sheet for bash commands.
@@ -9,6 +11,23 @@ https://linuxcontainers.org/
 ```
 ## packages
 [[linux_packages]
+
+
+## shortkeys
+```bash
+^c         # interupt for kill
+^z          # stop and not kill
+```
+### vim mode
+```bash
+set -o vi      # set +o vim for exit
+bind -p
+```
+### emacs mode
+```bash
+set -o emacs
+
+```
 
 
 ## list of package managers
@@ -41,8 +60,18 @@ help                       # list of all commands + shell
 help cd                    # doc for cd command == cd --help
 help for                   #doc for for command in bash
 man -k print              # seacrh in commands and short descriptoin like grep    **
+compgen -c 
+```
+
+## man
+```bash
+man -k ^ls$
+info sort | grep "\-s" or grep " -s"                        # Search for '-s' in the doc of sort
+man ps | grep -E "ali |" -n    # you can see line number in man page by grep 
 man rsync| less -p -v     #search for -v flag in rsync command
 rsync -h| less -p -v      #search for -v flag in rsync command
+g45                             # go to line 45 | find the line number with -n in grep | use / for search 
+-N press Enter                  # toggle line numbers in man page
 ```
 
 ## WH
@@ -68,7 +97,6 @@ compgen -k                 # will list all the keywords you could run.
 compgen -A function        # will list all the functions you could run.
 compgen -A function -abck  # will list all the above in one go.
 ```
-
 ## apt
 ```bash
 apt update                   # Refreshes repository index
@@ -114,8 +142,8 @@ mktemp                 # Create a temporary file
 ```bash
 mkdir foo                        # Create a directory
 mkdir foo bar                    # Create multiple directories
-mkdir -p| --parents foo/bar       # Create nested directory
-mkdir -p| --parents {foo,bar}/baz # Create multiple nested directories
+mkdir -p foo/bar       # Create nested directory
+mkdir -p {foo,bar}/baz # -p --parents Create multiple nested directories
 touch a; mkdir a                  #create a as a file and gets error for directory
 mktemp -d| --directory            # Create a temporary directory
 ```
@@ -129,17 +157,27 @@ ls -l                               # Show where symbolic links are pointing
 ln 1.txt hlink.txt                  # Create a hard link. change 1.txt will also change hlink.txt. but delete 1.txt will not delete hlink.txt
 ```
 
+## Temp files
+
+```bash
+/tmp                                 # is typically cleared on system reboots.
+/var/tmp                              # might retain files across reboots.
+mktemp                                 # create a random temporary file
+```
+
+
 ## Navigating Directories
 
 ```bash
 pwd                       # Print current directory path
 dir                       # like ls (diff in format)
+echo *                    # echo all files in current directory 
+echo ?                    # list files in current directory with one char in name like a
 ls                        # List directories
-ls -a| --all               # List directories including hidden
+ls -a| --all               # List directories including hidden ===> -aA show hidden but not . and ..
 ls -d                     # List just directories
 ls -l                     # List directories in long form
 ls -l -h| --human-readable # List directories in long form with human readable sizes
-la -lhA                     # -A List but do not show current dir and its parent  ==> ll -A  != ls -a
 ls -lhS                    # -S List and Sort by size
 ls -lhSr                  # -Sr List and Sort then reverse
 ls -lhSX                  # -SX List and Sort by extension or format
@@ -189,20 +227,21 @@ ls [1-9].txt              # List files 1.txt through 9.txt
 
 ```bash
 rmdir foo                        # Delete empty directory (safe command)
-rm -r| --recursive foo            # Delete directory including contents
-rm -r| --recursive -f| --force foo # Delete directory including contents, ignore nonexistent files and never prompt
+rm -d ./*                        # Delete empty directory ==rmdir
+rm -r  folder            # Delete directory including contents
 ```
 
 ## Deleting Files
 
 ```bash
-rm foo.txt            # Delete file
-rm -f| --force foo.txt # Delete file, ignore nonexistent files and never prompt
+rm    1.txt            # Delete file
+rm -f 1.txt # Delete file, ignore nonexistent files and never prompt
+rm -i 1.txt                                         # interactively (ask question)
 ```
 ## Moving Directories
 
 ```bash
-cp -R| --recursive foo bar                               # Copy directory
+cp -r foo bar                               # Copy directory
 cp -n foo bar                                           #copy with no overwrite
 cp -i foo bar                                           #copy with interactive question
 mv foo bar                                              # Move directory
@@ -248,10 +287,12 @@ dirname /home/mycomputer/project  # remove last section and return others= /home
 ```
 
 ## Writing Files
+
 ```bash
 vim 1.js                        # write inside vim
 cat > 1.js                      # write inside terminal (replace)
 cat >> 1.js                     # write inside terminal (append)
+cat >> 1.js << D                # write inside terminal until you type D and press enter
 echo "this is a text" > 1.js    # write without opening the file (replace)
 echo > 1.js                     # empty the content of a file with a space char
 > 1.js                          # empty the content of a file with no char
@@ -274,8 +315,15 @@ ls >out.txt 2>&1            # Send channel 2 in the same file as channel 1
 ls -lh > newfile.txt         #first create newfile.txt then run the command ls -h then write
 ls > /dev/null             # Discard standard output and error
 read foo                   # Read from standard input and write to the variable foo
+tee -a foo.txt             # echo + save in file (-a append)
 ```
 
+## Trnaslation
+```bash
+echo "this is a test" | tr ' ' '_'              # replace space with _ 
+tr [a-z] [A-Z]                                     # uppercase
+tr A-Z a-z < foo.txt                                       # lowercase (you can do not use [])
+```
 
 ## Calculator
 ```bash
@@ -296,6 +344,8 @@ cmd >> filename		# append output to filename
 cmd < filename		# send input data to cmd from filename
 help | more
 echo "1.txt 2.txt" | xargs mkdir
+echo -n "hello"; date  # print hello and date in one line===> echo -n ==> one line
+{ echo -n "hello"; date;} > output.txt     # command grouping and redirect both output into a file{space needed}
 ```
 
 ## File Permissions
@@ -325,6 +375,10 @@ For a directory, execute means you can enter a directory.
 
 ```bash
 ls -l /foo.sh            # List file permissions
+chown  username 1.js    # change owner
+chown -r ali folder      # -r change all inener folders too 
+chown :groupname 1.js    # change groupname
+chgrp
 chmod +100 foo.sh        # Add 1 to the user permission
 chmod -100 foo.sh        # Subtract 1 from the user permission
 chmod u+x foo.sh         # Give the user execute permission
@@ -333,8 +387,6 @@ chmod u-x,g-x foo.sh     # Take away the user and group execute permission
 chmod u+x,g+x,o+x foo.sh # Give everybody execute permission
 chmod a+x foo.sh         # Give everybody execute permission
 chmod +x foo.sh          # Give everybody execute permission
-chown :groupname 1.js    # change groupname
-chown  username 1.js    # change owner
 umask                    # show default permission:0022 or 0002
 stat 1.js                # view Inode details
 ```
@@ -399,10 +451,13 @@ find / -mtime +50 –mtime -100       # modified in 50-100 last days
 ```
 
 ## Find in Files
+**note**: use -n always
 
 ```bash
 grep 'foo' /bar.txt                           # Search for 'foo' in file 'bar.txt'
-grep 'foo' /*.txt                             # Search for 'foo' in all txt files
+info sort | grep "\-s" or grep " -s"                        # Search for '-s' in the doc of sort
+man ps | grep -e "first word" -e "second word"                     # Search for multiple words 
+man ps | grep -E --color "word |"              # Adding a pipe in search term with -E flag for show the whole output and highlight term in that
 grep 'foo' -r ./*                             # Search for 'foo' in all files and directories
 grep 'foo' -n bar.txt  | --line-number        # Add line numbers
 grep 'foo' -w bar.txt                         # find exact word
@@ -431,6 +486,11 @@ grep --extended-regexp| -E 'foo|bar' /baz -R   # Use regular expressions
 egrep 'foo|bar' /baz -R                        # Use regular expressions
 history | grep "git commit" | grep "dotfiles"  # use pipe
 ```
+## VIM
+```bash
+vim -c "/ali" 1.txt                             #take me to position that ali is. -c means commnad mode and / means search mode 
+vim +14 1.txt                                  # open file at line 14
+```
 
 ### Replace in Files
 
@@ -445,7 +505,13 @@ sed 's/fox/bear/g' foo.txt -i| --in-place # Replace fox with bear and overwrite 
 
 ## Sort
 ```bash
-sort 1.js                       #sort lines inside 1.js and print in terminal
+sort 1.js                       #sort lines inside 1.js and print in terminal per first column by alphabet
+sort -o output.txt file.txt     #sort lines inside 1.js and save in output.txt
+sort -u filename.txt            #sort lines inside 1.js and remove repeated 
+sort -k 2 1.js                  #sort lines inside 1.js per second column(key) (date > 1.txt or ls-la >1.txtj j) 
+sort -k 1 -k 2 1.js             #sort lines inside 1.js per first then per second column 
+sort -k 2 -n 1.js               #sort lines inside 1.js per second column numerically [ -M for month ] 
+sort -t : -k 3n /etc/passwd    # sort -t for separator -k for col and 3n means third col by numerically
 sort 1.js -r                   #sort reverse
 sort 1.js -n                   #sort numerically
 sort 1.js -f                   #sort uppercase and lowercase together
@@ -576,19 +642,6 @@ free -s| --seconds 5    # Show memory usage and update continuously every five s
 mount
 ```
 
-## Packages
-
-```bash
-apt update                   # Refreshes repository index
-apt search wget              # Search for a package
-apt show wget                # List information about the wget package
-apt list --all-versions wget # List all versions of the package
-apt install wget             # Install the latest version of the wget package
-apt install wget=1.2.3       # Install a specific version of the wget package
-apt remove wget              # Removes the wget package
-apt upgrade                  # Upgrades all upgradable packages
-```
-
 
 
 ## Shutdown and Reboot
@@ -626,21 +679,25 @@ ps -l                  # shows long list
 ps -H                  # shows as tree
 pidof foo              # Return the PID of all foo processes
 
-CTRL+Z                 # Suspend a process running in the foreground
+
+CTRL+C                 # Interupt a  process
+CTRL+Z                 # Suspend a process running in the foreground  ===> jobs
 bg                     # Resume a suspended process and run in the background
 fg                     # Bring the last background process to the foreground
 fg 1                   # Bring the background process with the PID to the foreground
 
 sleep 30 &             # Sleep for 30 seconds and move the process into the background
-jobs                   # List all background jobs
+jobs                   # List all background jobs (you can see jobs just in terminal that used CTRL+Z)
 jobs -p                # List all background jobs with their PID
+fg %1                   # 1 is job id 
+# if you kill a process that is inide the jobs it will kill when comes to foreground
 
 lsof                   # List all open files and the process using them
 lsof -itcp:4000        # Return the process listening on port 4000
 nohup CMD 			      # runs cmd under init ps
 ```
 
-## ps items
+## ps cols
 ```bash
 UID                    # user ID
 PID                    # process ID
@@ -682,6 +739,7 @@ killall foo            # Kill all process with the specified name gracefully.
 
 ```bash
 date                   # Print the date and time
+date +%s               # Print timestamp
 date --iso-8601        # Print the ISO8601 date
 date --iso-8601=ns     # Print the ISO8601 date and time
 cal                    # calender ==> apt install ncal
@@ -804,12 +862,17 @@ sudo hostname something # change temporary hostname to something
 
 ## User Management
 ```bash
+sh                    # become shell ==> bash is better
+bash                   # become bash
+sudo sh -c 'cd dirname' # run a command as a shell
 sudo -s                 # become root
 sudo su                 # become root
 su - mohamad            # become another user
-sudo sh -c 'cd dirname' # run a command as a shell
-useradd -m -s [shell_name] username # creates a new user
-useradd username -g [pg_name] 		# adds user to group_name as primary group
+useradd ali
+passwd ali               # add password for ali
+userdel -r ali            # -r is for delete home directory  
+useradd -m -s [shell_name] username # creates a new user -m create a home
+useradd ali -g [pg_name] 		# adds user to group_name as primary group
 groups                  # display groups
 sudo tail /etc/group
 groupadd [OPTIONS] GROUPNAME
@@ -889,162 +952,5 @@ alias rm='rm --interactive'
 # Always show disk usage in a human readable format
 alias df='df -h'
 alias du='du -h'
-```
-
-## Bash Script
-
-### Variables
-
-```bash
-#!/bin/bash
-
-foo=123                # Initialize variable foo with 123
-declare -i foo=123     # Initialize an integer foo with 123
-declare -r foo=123     # Initialize readonly variable foo with 123
-echo $foo              # Print variable foo
-echo ${foo}_'bar'      # Print variable foo followed by _bar
-echo ${foo:-'default'} # Print variable foo if it exists otherwise print default
-
-export foo             # Make foo available to child processes
-unset foo              # Make foo unavailable to child processes
-```
-
-### Environment Variables
-
-```bash
-#!/bin/bash
-
-env            # List all environment variables
-echo $PATH     # Print PATH environment variable
-export FOO=Bar # Set an environment variable
-```
-
-### Functions
-
-```bash
-#!/bin/bash
-
-greet() {
-  local world = "World"
-  echo "$1 $world"
-  return "$1 $world"
-}
-greet "Hello"
-greeting=$(greet "Hello")
-```
-
-### Exit Codes
-
-```bash
-#!/bin/bash
-
-exit 0   # Exit the script successfully like return 0 in cpp
-exit 1   # Exit the script unsuccessfully
-echo $?  # Print the last exit code
-```
-
-### Conditional Statements
-
-#### Boolean Operators
-
-- `$foo` - Is true
-- `!$foo` - Is false
-
-#### Numeric Operators
-
-- `-eq` - Equals
-- `-ne` - Not equals
-- `-gt` - Greater than
-- `-ge` - Greater than or equal to
-- `-lt` - Less than
-- `-le` - Less than or equal to
-- `-e` foo.txt - Check file exists
-- `-z` foo - Check if variable exists
-
-#### String Operators
-
-- `=` - Equals
-- `==` - Equals
-- `-z` - Is null
-- `-n` - Is not null
-- `<` - Is less than in ASCII alphabetical order
-- `>` - Is greater than in ASCII alphabetical order
-
-#### If Statements
-
-```bash
-#!/bin/bash
-
-if [[$foo = 'bar']]; then
-  echo 'one'
-elif [[$foo = 'bar']] || [[$foo = 'baz']]; then
-  echo 'two'
-elif [[$foo = 'ban']] && [[$USER = 'bat']]; then
-  echo 'three'
-else
-  echo 'four'
-fi
-```
-
-#### Inline If Statements
-
-```bash
-#!/bin/bash
-
-[[ $USER = 'rehan' ]] && echo 'yes' || echo 'no'
-```
-
-#### While Loops
-
-```bash
-#!/bin/bash
-
-declare -i counter
-counter=10
-while [$counter -gt 2]; do
-  echo The counter is $counter
-  counter=counter-1
-done
-```
-
-#### For Loops
-
-```bash
-#!/bin/bash
-
-for i in {0..10..2}
-  do
-    echo "Index: $i"
-  done
-
-for filename in file1 file2 file3
-  do
-    echo "Content: " >> $filename
-  done
-
-for filename in *;
-  do
-    echo "Content: " >> $filename
-  done
-```
-
-#### Case Statements
-
-```bash
-#!/bin/bash
-
-echo "What's the weather like tomorrow?"
-read weather
-
-case $weather in
-  sunny | warm ) echo "Nice weather: " $weather
-  ;;
-  cloudy | cool ) echo "Not bad weather: " $weather
-  ;;
-  rainy | cold ) echo "Terrible weather: " $weather
-  ;;
-  * ) echo "Don't understand"
-  ;;
-esac
 ```
 
