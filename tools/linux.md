@@ -13,23 +13,6 @@ https://linuxcontainers.org/
 [[linux_packages]
 
 
-## shortkeys
-```bash
-^c         # interupt for kill
-^z          # stop and not kill
-```
-### vim mode
-```bash
-set -o vi      # set +o vim for exit
-bind -p
-```
-### emacs mode
-```bash
-set -o emacs
-
-```
-
-
 ## list of package managers
 ```bash
 apt       # debian based   #.deb  # Ubuntu, Mint,kali, Debian, elementary OS, Zorin OS, BlackBox
@@ -133,7 +116,10 @@ touch foo.txt bar.txt  # Create multiple files
 touch {foo,bar}.txt    # Create multiple files
 touch test{1..3}       # Create test1, test2 and test3 files
 touch test{a..c}       # Create testa, testb and testc files
-mktemp                 # Create a temporary file
+cat > 1.txt             # start writing in a file
+echo "hi" > 1.txt
+printf "hi" > 1.txt
+vim 1.txt | nano 1.txt
 ```
 
 
@@ -163,6 +149,8 @@ ln 1.txt hlink.txt                  # Create a hard link. change 1.txt will also
 /tmp                                 # is typically cleared on system reboots.
 /var/tmp                              # might retain files across reboots.
 mktemp                                 # create a random temporary file
+mktemp -d myname.XXXX                  # cretae a temp diretory in current folder (-d folder)
+mktemp -u /tmp/temp1.XXXXXX /tmp/temp2.XXXXXX       # create multiple temp file
 ```
 
 
@@ -170,39 +158,43 @@ mktemp                                 # create a random temporary file
 
 ```bash
 pwd                       # Print current directory path
-dir                       # like ls (diff in format)
+cd                        # Go to home directory
+cd ~                      # Go to home directory
+cd -                      # toggle directory 
+pushd foo                 # Go to foo sub-directory and add previous directory to stack
+popd                      # Go back to directory in stack saved by `pushd`
+dirs                      # list of pushd
+```
+## List direcoty
+
+```bash
+tree                      # List directory and file tree
+tree -a                   # List directory and file tree including hidden
+tree -d                   # List directory tree
+ls -R                      # -R:recursive List inner folders like tree
 echo *                    # echo all files in current directory 
 echo ?                    # list files in current directory with one char in name like a
-ls                        # List directories
+ls                        # List directories sort by name alphabetically
+dir                       # like ls (diff in format) like win
 ls -a| --all               # List directories including hidden ===> -aA show hidden but not . and ..
 ls -d                     # List just directories
 ls -l                     # List directories in long form
-ls -l -h| --human-readable # List directories in long form with human readable sizes
+ls -l -h                   # List directories in long form with human readable sizes
 ls -lhS                    # -S List and Sort by size
 ls -lhSr                  # -Sr List and Sort then reverse
 ls -lhSX                  # -SX List and Sort by extension or format
 ls -lhSt                  # -St List and Sort by time
 ls -t                     # List directories by modification time, newest first
 ls folder                    # List files inside folder
-ll 1.txt                   # just info of 1.txt
 ls -c -ltd foo            # just info of specific folder
 file foo.txt              # simple file info ==> simple stat
 stat foo.txt              # List size, created and modified timestamps for a file
 stat foo                  # List size, created and modified timestamps for a directory
-tree                      # List directory and file tree
-ls -R                      # -R:recursive List inner folders like tree
-tree -a                   # List directory and file tree including hidden
-tree -d                   # List directory tree
-cd foo                    # Go to foo sub-directory
-cd                        # Go to home directory
-cd ~                      # Go to home directory
-cd -                      # Go to last directory
-pushd foo                 # Go to foo sub-directory and add previous directory to stack
-popd                      # Go back to directory in stack saved by `pushd`
 ```
 
 ## ls -l cols
 ```bash
+total (in ls -ls commnd)   # total number of bloacks ===> ls -asl ===> see block size of each file (Blocks have a fixed size :4kb)
 1. file type + file permissions
 3. number of hard links     # for files =1 for dir =2 
 4. owner
@@ -223,21 +215,19 @@ ls [12].txt               # List files with numbers in format like 1.txt and 2.t
 ls [!12].txt              # List files without this numbers
 ls [1-9].txt              # List files 1.txt through 9.txt
 ```
-## Deleting Directories
+## Deleting Directories and Files
 
 ```bash
 rmdir foo                        # Delete empty directory (safe command)
 rm -d ./*                        # Delete empty directory ==rmdir
 rm -r  folder            # Delete directory including contents
-```
-
-## Deleting Files
-
-```bash
 rm    1.txt            # Delete file
-rm -f 1.txt # Delete file, ignore nonexistent files and never prompt
+rm -r ./*                         # -r alseo delete files
+rm -f 1.txt                             # Delete file, ignore nonexistent files and never prompt
 rm -i 1.txt                                         # interactively (ask question)
+trash 1.txt                      # Move file to trash (you need to install)
 ```
+
 ## Moving Directories
 
 ```bash
@@ -258,7 +248,7 @@ rsync -avz username@hostname:/foo /bar                  # Copy remote directory 
 
 ```bash
 cp foo.txt bar.txt                                # Copy file
-mv foo.txt bar.txt                                # Move file
+mv foo.txt folder                                # Move file
 mv 1.txt 1new.txt                                  # Rename file
 # we do not have a command for renaming a file but we can move it
 rsync -z| --compress -v| --verbose /foo.txt /bar    # Copy file quickly if not changed
@@ -280,7 +270,7 @@ wc foo.txt             # List number of lines words and characters in the file
 file foo.txt           # file type
 cut -b 1,2,3 state.txt # cutting out the column of a file (slice a file)
 cut -b 1-3,5-7 foo.txt #slice with range
-fold -w60 -s foo.txt    # wrap in 60 char wrap and -s for break the lines on spaces
+fold -w 60 -s foo.txt    # wrap in 60 char wrap ( width) and -s for break the lines on spaces
 basename /home/1.js    # gives you the last section of the path == 1.js
 basename /home/1.js .js  # remove .js from the basename
 dirname /home/mycomputer/project  # remove last section and return others= /home/mycomputer
@@ -297,7 +287,7 @@ echo "this is a text" > 1.js    # write without opening the file (replace)
 echo > 1.js                     # empty the content of a file with a space char
 > 1.js                          # empty the content of a file with no char
 truncate -s 0 1.js              # empty file 
-
+yes "Line" | head -n 100 > my_file.txt      # create a file with 100 lines
 ```
 
 
@@ -306,11 +296,11 @@ truncate -s 0 1.js              # empty file
 ```bash
 echo "foo" > bar.txt       # Overwrite file with content (redirection mark)
 echo "foo" >> bar.txt      # Append to file with content
-ls xxxNO > 1.txt            # if xxxNO does not exist the contenet of 1.txt will be delete with nothing (standard output)
+ls xxxNO > 1.txt            # if xxxNO does not exist the contenet of 1.txt will be delete with nothing (wrong you should use channel 2)
 ls exists 1> stdout.txt    # Redirect the standard output to a file (chanel 1)
 ls noexist 2> stderror.txt # Redirect the standard error output to a file (chanel 2)
 ls xxx 1> output.txt 2> error.txt
-ls xxx > output.txt 2> error.txt    #default output
+ls xxx > output.txt 2> error.txt    #default output is channgel 1
 ls >out.txt 2>&1            # Send channel 2 in the same file as channel 1
 ls -lh > newfile.txt         #first create newfile.txt then run the command ls -h then write
 ls > /dev/null             # Discard standard output and error

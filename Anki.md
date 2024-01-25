@@ -2,6 +2,8 @@
 
 shell is old. bash is good
 
+:help index
+
 ctlr + u
 ctrl + d
 zz
