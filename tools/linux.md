@@ -44,6 +44,8 @@ help cd                    # doc for cd command == cd --help
 help for                   #doc for for command in bash
 man -k print              # seacrh in commands and short descriptoin like grep    **
 compgen -c 
+dman                      # read man page for command without installing that( apt i debian-goodies)
+wman                      # text web browser for reading man page on internet
 ```
 
 ## man
@@ -304,7 +306,7 @@ ls xxx > output.txt 2> error.txt    #default output is channgel 1
 ls >out.txt 2>&1            # Send channel 2 in the same file as channel 1
 ls -lh > newfile.txt         #first create newfile.txt then run the command ls -h then write
 ls > /dev/null             # Discard standard output and error
-read foo                   # Read from standard input and write to the variable foo
+read foo                   # Read from standard input and write to the variable foo (foo=inpiut() in python)
 tee -a foo.txt             # echo + save in file (-a append)
 ```
 
@@ -379,6 +381,30 @@ chmod a+x foo.sh         # Give everybody execute permission
 chmod +x foo.sh          # Give everybody execute permission
 umask                    # show default permission:0022 or 0002
 stat 1.js                # view Inode details
+```
+
+
+## User Management
+```bash
+sh                    # become shell ==> bash is better
+bash                   # become bash
+sudo sh -c 'cd dirname' # run a command as a shell
+sudo -s                 # become root
+sudo su                 # become root
+su - mohamad            # become another user
+useradd ali
+passwd ali               # add password for ali
+userdel -r ali            # -r is for delete home directory  
+useradd -m -s [shell_name] username # creates a new user -m create a home
+useradd ali -g [pg_name] 		# adds user to group_name as primary group
+groups                  # display groups
+sudo tail /etc/group
+groupadd [OPTIONS] GROUPNAME
+id                     # show active user
+who                    # show who is logged on the system
+w                      # like who with more details
+users                  # list logged in users
+cat /etc/passwd                     # list of all users
 ```
 
 
@@ -461,8 +487,8 @@ grep 'foo' /bar -R | --dereference-recursive  # Search for 'foo' in directory 'b
 grep 'foo' /bar -l | --files-with-matches     # Show only files that match
 grep 'foo' /bar -L | --files-without-match    # Show only files that don't match
 
-grep 'foo' /bar -x | --line-regexp            # Match only the entire match line
-grep 'foo' /bar -v | --invert-match           # Show only lines that don't match
+grep 'foo' 1.txt -x | --line-regexp            # Match only the entire match line
+grep 'foo' 1.txt -v | --invert-match           # Show only lines that don't match
 grep 'foo' /bar -c | --count                  # Count the number lines that match
 
 grep 'foo' -lrc ./*                           # show count + name files that match in all of directories and subdirectories
@@ -849,30 +875,6 @@ hostname               # show hostname (/etc/hostname)
 hostname -i            # show hostname with ip
 sudo hostname something # change temporary hostname to something 
 ```
-
-## User Management
-```bash
-sh                    # become shell ==> bash is better
-bash                   # become bash
-sudo sh -c 'cd dirname' # run a command as a shell
-sudo -s                 # become root
-sudo su                 # become root
-su - mohamad            # become another user
-useradd ali
-passwd ali               # add password for ali
-userdel -r ali            # -r is for delete home directory  
-useradd -m -s [shell_name] username # creates a new user -m create a home
-useradd ali -g [pg_name] 		# adds user to group_name as primary group
-groups                  # display groups
-sudo tail /etc/group
-groupadd [OPTIONS] GROUPNAME
-id                     # show active user
-who                    # show who is logged on the system
-w                      # like who with more details
-users                  # list logged in users
-cat /etc/passwd                     # list of all users
-```
-
 ## encrypt
 ```bash
 gpg -c FILE         # encrypt file

@@ -1,3 +1,8 @@
+
+https://github.com/tiimgreen/github-cheat-sheet
+https://github.com/arslanbilal/git-cheat-sheet
+https://github.com/RehanSaeed/Git-Cheat-Sheet
+
 git init            # initiates git in the current directory
 git remote add origin https://github.com/repo_name.git        # add remote reposiory
 git clone <address> # creates a git repo from given address (get the address from your git-server)

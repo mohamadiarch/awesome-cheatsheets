@@ -1,20 +1,25 @@
 
 # Linux 
 
+## Notation
 
 ```bash
 bind -p
 ^c         # ^ means ctrl
 \C          # means ctrl
 \e          # means escape
-
+sudo apt-get install screen     ## check please
 ```
 
-
+## IMP
+```bash
+ctrl shift - ==> undo
+alt + d ==> delete after cursor
+alt + backspace ==> delete word by word
+```
 
 ## shortkeys
 ```bash
-^z          # stop and not kill
 Ctrl+C – Kill current process
 Ctrl+D – Close Terminal
 Ctrl+Z – Suspend. Use “fg process” to return
@@ -28,12 +33,15 @@ Ctrl+N or Down Arrow - Next Command
 Ctrl+R - Recall command matching search
 Ctrl+O - Run the command you found with Ctrl+R
 Ctrl+G - Leave history searching mode without running a command
+
 !! - Repeat previous command
-!:n – Repeat specific argument from previous command
+!-2 - Repeat 2th previous command
+!:n – Repeat specific argument from previous command  ==> echo hi woman; man !:2;
 !:n:m – Repeat range of arguments from previous command
 !:n:$ - Repeat range of arguments from n to end from previous command
 !* - Repeat All arguments from previous command
-Alt + . - Show Last argument from previous command
+!word -Execute the most recent command starting with word (like !ls for ls -laASr)
+Alt + . - Show Last argument from previous command (like -l in ls -l)
 ^abc­^­def -  Run previous command, replacing abc with def
 
 Move Cursor
@@ -53,7 +61,7 @@ Ctrl+H or Backspace – Delete character before the cursor
 Alt+D – Delete the Word after the cursor
 
 Fix Typos
-Alt+T or Esc+T - Swap current word with previous word
+Alt+T or Esc+T - Swap current word with previous word (press between gaps)
 Ctrl+T Swap the last two characters before the cursor with each other
 Ctrl+_ (Ctrl+Shift+-)  - Undo your last key press
 Ctrl+U – Clear all text from Cursor to Beginning of Line
@@ -95,5 +103,19 @@ ctrl + wv                          # open current buffer as new vertical split
 Ctrl + wT                          # open current buffer as new tab
 ctrl + u | ctrl + d                 # scroll up and down as page
 ```
+
+## NANO
+
+```bash
+
+```
+
+
+## LESS
+
+```bash
+
+```
+
 
 
