@@ -106,6 +106,7 @@ apt remove wget              # Removes the wget package
 
 ```bash
 !!            # Run the last command
+history -c        # clear all history
 touch foo.sh   # update timestamp of file exists
 chmod +x !$   # !$ is the last argument of the last command i.e. foo.sh
 ```
@@ -179,7 +180,7 @@ echo ?                    # list files in current directory with one char in nam
 ls                        # List directories sort by name alphabetically
 dir                       # like ls (diff in format) like win
 ls -a| --all               # List directories including hidden ===> -aA show hidden but not . and ..
-ls -d                     # List just directories
+ls -d | ls -d */                     # List just directories
 ls -l                     # List directories in long form
 ls -l -h                   # List directories in long form with human readable sizes
 ls -lhS                    # -S List and Sort by size
@@ -270,9 +271,6 @@ head foo.txt -n 200    # show 200 line
 tail foo.txt           # Print bottom 10 lines of file
 wc foo.txt             # List number of lines words and characters in the file
 file foo.txt           # file type
-cut -b 1,2,3 state.txt # cutting out the column of a file (slice a file)
-cut -b 1-3,5-7 foo.txt #slice with range
-fold -w 60 -s foo.txt    # wrap in 60 char wrap ( width) and -s for break the lines on spaces
 basename /home/1.js    # gives you the last section of the path == 1.js
 basename /home/1.js .js  # remove .js from the basename
 dirname /home/mycomputer/project  # remove last section and return others= /home/mycomputer
@@ -340,25 +338,42 @@ echo -n "hello"; date  # print hello and date in one line===> echo -n ==> one li
 { echo -n "hello"; date;} > output.txt     # command grouping and redirect both output into a file{space needed}
 ```
 
+
+## User Management
+```bash
+sh                    # become shell ==> bash is better
+bash                   # become bash
+sudo sh -c 'cd dirname' # run a command as a shell
+su - mohamad            # become another user
+sudo -s                 # become root
+sudo su                 # become root
+useradd ali
+passwd ali               # add password for ali
+userdel -r ali            # -r is for delete home directory  
+useradd -m -s [shell_name] username # creates a new user -m create a home (/bin/bash)
+useradd ali -g [pg_name] 		# adds user to group_name as primary group
+groups                  # display groups
+sudo tail /etc/group
+groupadd [OPTIONS] GROUPNAME
+id ali                    # show USERID for ali (username) ==> id show id of cuurent user
+who                    # show who is logged on the system
+w                      # like who with more details
+users                   # list logged in users
+cat /etc/passwd                     # list of all users
+```
+
+## passwd cols
+
+```bash
+compgen -u  # list of all users
+man passwd
+username:password-encrypted(x)(/etc/shadow):uid:gid:gecos(User information):home:shell
+```
+
 ## File Permissions
 
-| # | Permission              | rwx | Binary |
-|   | -                       | -   | -      |
-| 7 | read, write and execute | rwx | 111    |
-| 6 | read and write          | rw- | 110    |
-| 5 | read and execute        | r-x | 101    |
-| 4 | read only               | r-- | 100    |
-| 3 | write and execute       | -wx | 011    |
-| 2 | write only              | -w- | 010    |
-| 1 | execute only            | --x | 001    |
-| 0 | none                    | --- | 000    |
-
+| -r Read =4 | -w Write =2 | -x Execute =1 |
 For a directory, execute means you can enter a directory.
-
-| User | Group | Others | Description                                                                                          |
-| -    | -     | -      | -                                                                                                    |
-| 6    | 4     | 4      | User can read and write, everyone else can read (Default file permissions)                           |
-| 7    | 5     | 5      | User can read, write and execute, everyone else can read and execute (Default directory permissions) |
 
 - u - User
 - g - Group
@@ -367,46 +382,21 @@ For a directory, execute means you can enter a directory.
 
 ```bash
 ls -l /foo.sh            # List file permissions
-chown  username 1.js    # change owner
+chown  username 1.txt    # change owner
 chown -r ali folder      # -r change all inener folders too 
-chown :groupname 1.js    # change groupname
-chgrp
-chmod +100 foo.sh        # Add 1 to the user permission
-chmod -100 foo.sh        # Subtract 1 from the user permission
+chgrp groupname 1.txt
+chmod -744 foo.sh        # rwx for user+ r for group + r for others (+ or -)
 chmod u+x foo.sh         # Give the user execute permission
-chmod g+x foo.sh         # Give the group execute permission
 chmod u-x,g-x foo.sh     # Take away the user and group execute permission
-chmod u+x,g+x,o+x foo.sh # Give everybody execute permission
+chmod o+rwx file # add rwx for other
+chmod o=rw file  # set rw for other
+chmod og-x file  # remove x from other and group
+chmod a+r file   # everyone can read
 chmod a+x foo.sh         # Give everybody execute permission
 chmod +x foo.sh          # Give everybody execute permission
-umask                    # show default permission:0022 or 0002
+umask                    # umask 0444 : the permissions that the user does not want to be given (default :0022 or 0002)
 stat 1.js                # view Inode details
 ```
-
-
-## User Management
-```bash
-sh                    # become shell ==> bash is better
-bash                   # become bash
-sudo sh -c 'cd dirname' # run a command as a shell
-sudo -s                 # become root
-sudo su                 # become root
-su - mohamad            # become another user
-useradd ali
-passwd ali               # add password for ali
-userdel -r ali            # -r is for delete home directory  
-useradd -m -s [shell_name] username # creates a new user -m create a home
-useradd ali -g [pg_name] 		# adds user to group_name as primary group
-groups                  # display groups
-sudo tail /etc/group
-groupadd [OPTIONS] GROUPNAME
-id                     # show active user
-who                    # show who is logged on the system
-w                      # like who with more details
-users                  # list logged in users
-cat /etc/passwd                     # list of all users
-```
-
 
 
 ## SUID and SGID File Permission
@@ -433,29 +423,21 @@ type wget                                  # Find the binary
 which wget                                 # Find the binary
 whereis wget                               # Find the binary, source, and manual page files
 compgen -c | -a                            # list of binary files
-```
 
-`locate` uses an index and is fast.
-
-```bash
 updatedb                                   # Update the index
-
-locate foo.txt                             # Find a file
+locate foo.txt                             # Ins: Find a file (locate use index so it is fast but find didn't and it is slow)
 locate --ignore-case                       # Find a file and ignore case
 locate f*.txt                              # Find a text file starting with 'f'
-```
 
-`find` doesn't use an index and is slow.
-
-```bash
+find                                       # like tree (find -print)
 find /path -name foo.txt                   # Find a file
 find /path -iname foo.txt                  # Find a file with case insensitive search
-find /path -name "*.txt"                   # Find all text files
+find /path -name "*.txt" -or -name "*.js"   # qoutation is important
+find folder/  -name 'pattern' -not -path 'folder/excluded_path/*'
 find /path -name foo.txt -delete           # Find a file and delete it
 find /path -name "*.png" -exec pngquant {} # Find all .png files and execute pngquant on it
 find /path -type f -name foo.txt           # Find a file
-find /path -type d -name foo               # Find a directory
-find /path -type l -name foo.txt           # Find a symbolic link
+find /path -type d -name foo               # Find a directory (-l for symbolic links)
 find /path -type f -mtime +30              # Find files that haven't been modified in 30 days
 find /path -type f -mtime +30 -delete      # Delete files that haven't been modified in 30 days
 find . -type d,l,f  				# find directorys , links and files
@@ -471,16 +453,16 @@ find / -mtime +50 –mtime -100       # modified in 50-100 last days
 
 ```bash
 grep 'foo' /bar.txt                           # Search for 'foo' in file 'bar.txt'
-info sort | grep "\-s" or grep " -s"                        # Search for '-s' in the doc of sort
+info sort | grep "\-s" or grep " -s" or grep -- "-s" or grep -e                       # grep [a-z] means range
 man ps | grep -e "first word" -e "second word"                     # Search for multiple words 
-man ps | grep -E --color "word |"              # Adding a pipe in search term with -E flag for show the whole output and highlight term in that
+man ps | grep -E --color "word| "              # Adding a pipe in search term with -E flag for show the whole output and highlight term in that
 grep 'foo' -r ./*                             # Search for 'foo' in all files and directories
 grep 'foo' -n bar.txt  | --line-number        # Add line numbers
 grep 'foo' -w bar.txt                         # find exact word
 grep 'Foo' /bar -i | --ignore-case            # Case insensitive search (ignore-case )
 grep 'foo' -A 4 bar.txt                       # find 4 lines After the match
-grep 'foo' -B 4 bar.txt                       # find 4 lines Before the match
-grep 'foo' -C 4 bar.txt                       # find 4 lines After and Before (content) the match
+grep 'foo' -B 4 bar.txt                       # find 4 lines Before the match (-A 4 -B 4)
+grep 'foo' -C 4 bar.txt                       # find 4 lines After and Before (content) the match (lowercase -c is for count)
 
 grep 'foo' /bar -r | --recursive              # Search for 'foo' in directory 'bar'
 grep 'foo' /bar -R | --dereference-recursive  # Search for 'foo' in directory 'bar' and follow symbolic links
@@ -511,11 +493,19 @@ vim +14 1.txt                                  # open file at line 14
 ### Replace in Files
 
 ```bash
-sed 's/fox/bear/g' foo.txt               # Replace fox with bear in foo.txt and output to console
-sed 's/fox/bear/gi' foo.txt              # Replace fox (case insensitive) with bear in foo.txt and output to console
-sed 's/red fox/blue bear/g' foo.txt      # Replace red with blue and fox with bear in foo.txt and output to console
-sed 's/fox/bear/g' foo.txt > bar.txt     # Replace fox with bear in foo.txt and save in bar.txt
+sed 's/fox/bear/' foo.txt               # Replace fox with bear in foo.txt. (find all fisrt matches in lines of whole file)
+# (we will see the output even no match find)   s:substitute
+sed 's/fox/bear/gi' foo.txt              # (-i case insensitive) -g find all matches in entire line 
+sed 's/red fox/blue bear/2' foo.txt      # just second match of line
+sed 's/fox/bear/3g' foo.txt > bar.txt     # Replacing from nth occurrence to all occurrences in a line
 sed 's/fox/bear/g' foo.txt -i| --in-place # Replace fox with bear and overwrite foo.txt
+sed '1,3 s/unix/linux/' geekfile.txt       # Just in line 1 to 3 (4,$)
+sed -n 's/unix/linux/p' geekfile.txt       # -p :Print the matches twice, -n: Printing only the replaced lines
+-------
+sed '5d' filename.txt                     # delete line 5
+sed '$d' filename.txt                     # delete last line
+sed '3,6d' filename.txt                   # delete line 3 to 6
+sed '/abc/d' filename.txt                 # delete line that contain abc
 ```
 
 
@@ -534,7 +524,18 @@ sort 1.js -f                   #sort uppercase and lowercase together
 sort 1.js +4                   #ignore 4lines
 sort 1.js | uniq -c            # count repeated lines
 sort 1.js | uniq -c | sort -n  # sort by repeated liens
-sort 1.js | more              #more option inside terminal when results are a lot
+```
+
+
+## cut
+```bash
+cut -b 1,2,3 state.txt # cutting out the column of a file (slice a file)
+# Tabs and backspaces are treated like as a character of 1 byte
+ps -aux | cut -b 1-3,5-7 #slice with range (2- means 2 to end) (-3 means first to col 3)
+ps -aux| cut -d " " -f 1 #slice with -d delimiter and -f field
+cut -d " " -f 1,2 state.txt --output-delimiter='%'
+cat state.txt | head -n 3 | cut -d ' ' -f 1 > list.txt
+fold -w 60 -s foo.txt    # wrap in 60 char wrap ( width) and -s for break the lines on spaces
 ```
 
 ## awk
@@ -577,52 +578,27 @@ cat /etc/crontabs                   # list of all crontabs
 
 ### zip
 
-Compresses one or more files into *.zip files.
 
 ```bash
+# Compresses one or more files into *.zip files.
 zip foo.zip /bar.txt                # Compress bar.txt into foo.zip
 zip foo.zip /bar.txt /baz.txt       # Compress bar.txt and baz.txt into foo.zip
 zip foo.zip /{bar,baz}.txt          # Compress bar.txt and baz.txt into foo.zip
-zip -r| --recurse-paths foo.zip /bar # Compress directory bar into foo.zip
-```
-
-### gzip
-
-Compresses a single file into *.gz files.
-
-```bash
+zip -r| --recurse-paths foo.zip /bar # Compress directory bar into foo.zip 
+# Compresses a single file into *.gz files.
 gzip /bar.txt foo.gz           # Compress bar.txt into foo.gz and then delete bar.txt
 gzip -k| --keep /bar.txt foo.gz # Compress bar.txt into foo.gz
-```
-
-### tar -c
-
-Compresses (optionally) and combines one or more files into a single *.tar, *.tar.gz, *.tpz or *.tgz file.
-
-```bash
+# Compresses (optionally) and combines one or more files into a single *.tar, *.tar.gz, *.tpz or *.tgz file.
 tar -c| --create -z| --gzip -f| --file=foo.tgz /bar.txt /baz.txt # Compress bar.txt and baz.txt into foo.tgz
 tar -c| --create -z| --gzip -f| --file=foo.tgz /{bar,baz}.txt    # Compress bar.txt and baz.txt into foo.tgz
 tar -c| --create -z| --gzip -f| --file=foo.tgz /bar              # Compress directory bar into foo.tgz
 ```
-
-## Decompressing Files
-
 ### unzip
 
 ```bash
 unzip foo.zip          # Unzip foo.zip into current directory
-```
-
-### gunzip
-
-```bash
 gunzip foo.gz           # Unzip foo.gz into current directory and delete foo.gz
 gunzip -k| --keep foo.gz # Unzip foo.gz into current directory
-```
-
-### tar -x
-
-```bash
 tar -x| --extract -z| --gzip -f| --file=foo.tar.gz # Un-compress foo.tar.gz into current directory
 tar -x| --extract -f| --file=foo.tar              # Un-combine foo.tar into current directory
 ```
@@ -631,9 +607,7 @@ tar -x| --extract -f| --file=foo.tar              # Un-combine foo.tar into curr
 
 ```bash
 df                     # List disks, size, used and available space
-df -h| --human-readable # List disks, size, used and available space in a human readable format
-df -m                  # MB
-df -k                  # KB
+df -h| --human-readable # -m: MB -k: KB 
 du                     # List current directory, subdirectories and file sizes
 du /foo/bar            # List specified directory, subdirectories and file sizes
 du -h| --human-readable # List current directory, subdirectories and file sizes in a human readable format
@@ -706,7 +680,7 @@ sleep 30 &             # Sleep for 30 seconds and move the process into the back
 jobs                   # List all background jobs (you can see jobs just in terminal that used CTRL+Z)
 jobs -p                # List all background jobs with their PID
 fg %1                   # 1 is job id 
-# if you kill a process that is inide the jobs it will kill when comes to foreground
+# if you kill a process that is inide the jobs it will kill when comes to foreground 
 
 lsof                   # List all open files and the process using them
 lsof -itcp:4000        # Return the process listening on port 4000
@@ -721,6 +695,7 @@ PPID                   # parent process ID
 C                      # CPU utilization of process 
 STIME                  # process start time
 TTY                    # terminal type 
+STAT                   #?
 TIME                   # CPU time taken by the process
 CMD                    # The command that started this process
 ```

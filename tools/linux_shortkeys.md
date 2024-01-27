@@ -16,6 +16,7 @@ sudo apt-get install screen     ## check please
 ctrl shift - ==> undo
 alt + d ==> delete after cursor
 alt + backspace ==> delete word by word
+ctrl +a cltr+ k ==> delete line
 ```
 
 ## shortkeys
@@ -36,12 +37,12 @@ Ctrl+G - Leave history searching mode without running a command
 
 !! - Repeat previous command
 !-2 - Repeat 2th previous command
-!:n – Repeat specific argument from previous command  ==> echo hi woman; man !:2;
+!* - Repeat All arguments from previous command
+!:n – Repeat specific argument from previous command  ==> ls -l -s; !:2;
 !:n:m – Repeat range of arguments from previous command
 !:n:$ - Repeat range of arguments from n to end from previous command
-!* - Repeat All arguments from previous command
 !word -Execute the most recent command starting with word (like !ls for ls -laASr)
-Alt + . - Show Last argument from previous command (like -l in ls -l)
+Alt + . - Show Last argument from previous command (like -l in ls -l) ==> !*
 ^abc­^­def -  Run previous command, replacing abc with def
 
 Move Cursor
