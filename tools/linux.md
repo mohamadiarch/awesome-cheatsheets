@@ -577,30 +577,27 @@ cat /etc/crontabs                   # list of all crontabs
 ## Compressing Files
 
 ### zip
-
-
 ```bash
 # Compresses one or more files into *.zip files.
-zip foo.zip /bar.txt                # Compress bar.txt into foo.zip
+zip foo.zip /bar.txt                # Compress bar.txt into foo.zip (Install)
 zip foo.zip /bar.txt /baz.txt       # Compress bar.txt and baz.txt into foo.zip
 zip foo.zip /{bar,baz}.txt          # Compress bar.txt and baz.txt into foo.zip
-zip -r| --recurse-paths foo.zip /bar # Compress directory bar into foo.zip 
+zip -r foo.zip /bar # Compress directory bar into foo.zip  --recurse-paths
 # Compresses a single file into *.gz files.
-gzip /bar.txt foo.gz           # Compress bar.txt into foo.gz and then delete bar.txt
-gzip -k| --keep /bar.txt foo.gz # Compress bar.txt into foo.gz
+gzip 1.txt            # Compress 1.txt and then delete 1.txt
+gzip -k 1.txt         # Compress bar.txt -k = keep alive (do not delete)
 # Compresses (optionally) and combines one or more files into a single *.tar, *.tar.gz, *.tpz or *.tgz file.
-tar -c| --create -z| --gzip -f| --file=foo.tgz /bar.txt /baz.txt # Compress bar.txt and baz.txt into foo.tgz
-tar -c| --create -z| --gzip -f| --file=foo.tgz /{bar,baz}.txt    # Compress bar.txt and baz.txt into foo.tgz
-tar -c| --create -z| --gzip -f| --file=foo.tgz /bar              # Compress directory bar into foo.tgz
+# tar is the best
+tar -cz -f foo.tgz 2.txt 1.txt # -f should be separate and last or --file:foo.tgz==> -c: create -z: gzip -f: file
 ```
 ### unzip
 
 ```bash
-unzip foo.zip          # Unzip foo.zip into current directory
+unzip foo.zip          # Unzip foo.zip into current directory (Install)
 gunzip foo.gz           # Unzip foo.gz into current directory and delete foo.gz
-gunzip -k| --keep foo.gz # Unzip foo.gz into current directory
-tar -x| --extract -z| --gzip -f| --file=foo.tar.gz # Un-compress foo.tar.gz into current directory
-tar -x| --extract -f| --file=foo.tar              # Un-combine foo.tar into current directory
+gunzip -k foo.gz     # Unzip foo.gz into current directory. -k: --keep-alive (do not delete)
+tar -xz -f foo.tar.gz # Un-compress foo.tar.gz into current directory
+tar -x --file=foo.tar              # Un-combine foo.tar into current directory
 ```
 
 ## Disk Usage
@@ -626,12 +623,6 @@ free -h| --human        # Show human readable memory usage
 free -h| --human --si   # Show human readable memory usage in power of 1000 instead of 1024
 free -s| --seconds 5    # Show memory usage and update continuously every five seconds
 ```
-
-## Mounting
-```bash
-mount
-```
-
 
 
 ## Shutdown and Reboot
@@ -699,11 +690,6 @@ STAT                   #?
 TIME                   # CPU time taken by the process
 CMD                    # The command that started this process
 ```
-## Partition
-```bash
-fdisk -l               # list of partitions and drivers
-```
-
 
 ## Process Priority
 
@@ -823,6 +809,19 @@ dig example.com             # Show complete DNS information
 
 cat /etc/resolv.conf        # resolv.conf lists nameservers
 ```
+
+
+## Partition
+```bash
+fdisk -l               # list of partitions and drivers
+```
+
+## Mounting
+```bash
+mount
+```
+
+
 
 ## Hardware
 
