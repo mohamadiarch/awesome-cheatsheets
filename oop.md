@@ -129,6 +129,8 @@ Adding manpower to a late software project makes it later.
 
 OOP refers to object-oriented programming. It is the programming paradigms that is defined using objects. Objects can be considered as real-world instances of entities like class, that have some characteristics and behaviors.
 
+Developed in 1960's ==> Simula language + smaltalk
+
 ### What is the need of OOP?
 
 There are many reasons why OOP is preferred, but the most important among them are:
@@ -136,6 +138,7 @@ There are many reasons why OOP is preferred, but the most important among them a
 * OOP helps the user to understand the Software easily, even they don’t know about implementation.
 * With OOP the readability, maintainability & understandability of the code is increase multifold.
 * Very large software can be easily written & managed by using OOP.
+
 
 ### What are some advantages of using OOP?
 
@@ -159,7 +162,7 @@ OOP or Object-Oriented Programming mainly comprises of the below four principles
 
 ![Encapsulation](https://i.ibb.co/JB6HF7T/image.png)
 
-Encapsulation is the mechanism of wrapping the instance variables and methods together as a single unit like a class & exposing the selected information to the outside world.
+Encapsulation is the mechanism of wrapping the instance variables and methods together as a single unit like a class & exposing the selected information to the outside world.Exp: diffrenet section of company: finance,sales and managemnet
 
 Encapsulation can also be defined in two different ways:
 
@@ -175,24 +178,37 @@ The term “inheritance” means “receiving some quality or behavior from a pa
 The various types of inheritance include:
 
 * Single inheritance
-* Multiple inheritances
+* Multiple inheritances ==> java does not have this
 * Multi-level inheritance
 * Hierarchical inheritance
 * Hybrid inheritance
 
 ### Abstraction
 
-If you are a user, and you have a problem statement, you don't want to know how the components of the software work, or how it's made. You only want to know how the software solves your problem. *Abstraction is a process of hiding the implementation details from the user and only providing functionality to the user*. It is one of the main features of OOP.
+If you are a user, and you have a problem statement, you don't want to know how the components of the software work(details), or how it's made. You only want to know how the software solves your problem. *Abstraction is a process of hiding the implementation details from the user and only providing functionality(essential information) to the user*. It is one of the main features of OOP.
 
 For example, consider a car. You only need to know how to run a car, and not how the wires are connected inside it. This is obtained using Abstraction
 
 ### Polymorphism
 
-Polymorphism is composed of two words - “poly” means “many”, and “morph” means “shapes”. Therefore Polymorphism refers to something that has many shapes.
+Polymorphism is composed of two words - “poly” means “many”, and “morph” means “shapes”. Therefore Polymorphism refers to something that has many shapes. exp: Calculate Area, Same function but different in implementation.
+In programming, polymorphism means the same function name (but different signatures)
+
+```py
+# Polymorphism in programming language
+
+def add(x, y, z = 0): 
+	return x + y+z
+
+# Driver code 
+print(add(2, 3))
+print(add(2, 3, 4))
+```
 
 ![polymorphism](https://i.ibb.co/PcSfTGd/Untitled.png)
 
 In OOP, Polymorphism refers to the process by which some code, data, method, or object behaves differently under different circumstances. Compile-time polymorphism and Run time polymorphism are the two types of polymorphisms in OOP languages.
+
 
 ### Abstract class
 
@@ -247,6 +263,10 @@ A class can be understood as a template or blueprint. Which contains some values
 ### What is an object?
 
 An object is an identifiable entity with some characteristics & behaviors. An object is an instance of a class. When a class is defined, no memory is allocated, but when it is instantiated (object is created) memory is allocated.
+
+Class: design, blueprint
+Object: instance
+
 
 ```python 
 class Person:
@@ -350,10 +370,12 @@ Class variables are defined *outside* the initializer and instance variables are
 A *method* is a group of statements that perform some operations and may or may not return a result.
 
 * **Instance methods**
-    - ..
+    - usuall methods
 * **Class methods**
     - Class methods work with class variables and are accessible using the class name rather than its object. Since all class objects share the class variables, class methods are used to access and modify class variables.
     - Class methods are accessed using the class name and can be accessed without creating a class object.
+    - Class methods can be alternative construcotr .
+    - python doesn’t support method overloading like C++ or Java so we use class methods to create factory methods.
 * **Static methods**
     - Static methods are methods that are usually limited to class only and not their objects. They have no direct relation to class variables or instance variables. They are used as utility functions inside the class or when we do not want the inherited classes to modify a method definition.
     - Static methods can be accessed using the class name or the object name.
@@ -365,6 +387,26 @@ A *method* is a group of statements that perform some operations and may or may 
 * **Private attributes** cannot be accessed directly from outside the class but can be accessed from inside the class.
     - We can make members private using the double underscore `__` prefix
     - Access private attributes/methods in main code `objectName._ClassName__property/method`
+* **Protected attributes** are those members of the class that cannot be accessed outside the class but can be accessed from within the class and its subclasses.
+    - We can make members protected by using single underscore `-` prefix.
+
+
+### Static Variables 
+
+* **Advantages**:
+    - **Memory efficiency**: Since static variables are shared among all instances of a class, they can save memory by avoiding the need to create multiple copies of the same data.
+    - **Shared state**: Static variables can provide a way to maintain shared state across all instances of a class, allowing all instances to access and modify the same data.
+    - **Easy to access**: Static variables can be accessed using the class name itself, without needing an instance of the class. This can make it more convenient to access and modify the data stored in a static variable.
+    - **Initialization**: Static variables can be initialized when the class is defined, making it easy to ensure that the variable has a valid starting value.
+    - **Readability**: Static variables can improve the readability of the code, as they clearly indicate that the data stored in the variable is shared among all instances of the class.
+
+
+* **Disadvantages**:
+    - **Inflexibility**: Static variables can be inflexible, as their values are shared across all instances of the class, making it difficult to have different values for different instances.
+    - **Hidden dependencies**: Static variables can create hidden dependencies between different parts of the code, making it difficult to understand and modify the code.
+    - **Thread safety**: Static variables can be problematic in a multithreaded environment, as they can introduce race conditions and synchronization issues if not properly synchronized.
+    - **Namespace pollution**: Static variables can add to the namespace of the class, potentially causing name conflicts and making it harder to maintain the code.
+    - **Testing**: Static variables can make it more difficult to write effective unit tests, as the state of the static variable may affect the behavior of the class and its methods.
 
 ### Data hiding can be divided into two primary components:
 

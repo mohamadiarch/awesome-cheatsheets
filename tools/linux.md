@@ -50,6 +50,7 @@ wman                      # text web browser for reading man page on internet
 
 ## man
 ```bash
+man builtins
 man -k ^ls$
 info sort | grep "\-s" or grep " -s"                        # Search for '-s' in the doc of sort
 man ps | grep -E "ali |" -n    # you can see line number in man page by grep 
@@ -65,11 +66,22 @@ who
 whoami
 which
 whereis
-echo $USER    # display user
 logname       # 
 ```
 
-
+## Variables
+```bash
+echo $USER    # display user
+echo $SHELL   # display shell
+chsh -s /bin/zsh    # change default shell
+chsh -s $(which zsh)
+cat /etc/shells          # list of all shells 
+$HOME
+$PWD
+$PATH
+$TERM
+$TERMINFO
+```
 
 ## List of commands
 ```bash

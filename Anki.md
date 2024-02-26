@@ -4,6 +4,8 @@ shell is old. bash is good
 
 :help index
 
+increase terminal pane= ctrl + k or j for switch to another window ==> then ctrl+ up
+
 ctlr + u
 ctrl + d
 zz

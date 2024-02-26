@@ -25,6 +25,66 @@
 
 <br>
 
+----------------------------------------- pythone terms --------------------------------------------------------
+----------------------------------------------------------------------------------------------------------
+
+# python concepts
+https://docs.python.org/3/glossary.html
+
+## code trickes
+```py
+a,b,c= (1,2,56)        # unpacking
+a, b, c = [1, 2, 3]     # list unpacking
+```
+
+## Name mangling
+
+
+Name mangling is a mechanism in Python that modifies the names of attributes or methods within a class
+to avoid conflicts with names in subclasses or other parts of your code.
++ This modification makes it more difficult to directly access these "private" members from outside the class
++ Python modifies the name by thie formula: __age__ ==> _className__age__
++ dunder: double + underscore = __a
+
+
+1. First Class function: when functions in that language are treated like any other variable
+2. First-Class Object:While the terms "first-class function" and "first-class object" are often used interchangeably, there's a subtle difference between them.First-Class Object: any valid data structure has the same capabilities and functionalities as other data structures.
+3. higher-order functions: functions that operate on other functions.
+4. function aliasing: give another name of the function
+5. Wrapper function: when call a function inside of another function. the father is Wrapper function. used for decorators.
+6. A decorator is a function that can take a function as an argument and extend its functionality and return a modified function with extended functionality.
+7. nested decorators == Chaining decorators =applying more than one decorator inside a function
+8. The @classmethod decorator is a built-in function decorator that is an expression that gets evaluated after your function is defined.
+9. Factory methods return class objects ( similar to a constructor ) 
+10. A utility function in Python is a small, self-contained piece of code that performs a specific task.  we use static methods to create utility functions in python.
+13. magic methods???
+
+
+
+# super()
+to access methods and properties of a parent or sibling class. retunrs a temporary object of class
+
+
+## object vs type
+
+When defining a class in Python 2 or 3, you can explicitly specify its base class using the syntax class ClassName(base_class):.
+If you omit the base class, you can use object as a placeholder to indicate that the class inherits directly from the base class in Python 3 (or the equivalent in Python 2). This is essentially choosing the default inheritance
+Inherits from default base class
+    In Python 3, there isn't a single, explicitly named built-in base class like object was in Python 2. Instead, all classes directly or indirectly inherit from a more generic built-in base class.
+object is the base class of class hireacy
+
+# metaclass
+metaclass: A Class is also an object, and just like any other object, it’s an instance of something called Metaclass.The type class is default metaclass which is responsible for making classes. type is a built-in metaclass in python and With three arguments, return a new type object. This is essentially a dynamic form of the class statement.every class in python is also an object of type.Therefore We can use type directly to make a class, without any class syntax. if we want to modify the behavior of classes, we will need to write our own custom metaclass.
+```py
+Test = type('Test', (), {})
+# equals
+class Test:
+    pass
+```
+In contrast, __init__ doesn't return anything; it's only responsible for initializing the instance after it's been created. In general, you shouldn't need to override __new__unless you're subclassing an immutable type like str, int,
+----------------------------------------------------------------------------------------------------
+
+
 ### Basic Datatypes
 
 | Data Type | Description |
