@@ -152,6 +152,9 @@ Feel free to take a look. You might learn new things. They have been designed to
   </details>
 
 
+### Other cheatsheets
+https://github.com/crescentpartha/CheatSheets-for-Developers?tab=readme-ov-file
+
 ## 🙌🏼 How to Contribute?
 
 You are more than welcome to contribute and build your own cheat sheet for your favorite programming language, framework or development tool. Just submit changes via pull request and I will review them before merging.
