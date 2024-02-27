@@ -194,14 +194,6 @@ ppg_ctl reload                                   # reload cluster in windows
 pg_ctl restart                                  # restart cluster in windows
 pg_controldata                                # information about current cluster
 ```
-
-## command line
-```bash
-createdb -U alice -p 5432 -h localhost -d customers   # create new database for customers
-createdb -U alice customers                            # create new database for customers
-dropdb -U alice customers     # drop database
-```
-
 ## psql
 
 ```bash
@@ -211,6 +203,7 @@ show data_directory                              # show data directory
 show port                                       # show port
 show work_mem                                   # show work memory
 show max_connections                             # show something inside postgres.conf, no need to open file manually
+show search_path                                 # sort of searching namespaces
 select name,boot_val,source from pg_settings    # see something in postgres.conf
 select * fomr pg_file_settings                   # data dictionary view
 \d pg_settings                                   # all columns in postgres.conf
@@ -220,19 +213,40 @@ alter system reset all                           # reset all properties in postg
 select pg_reload_conf();                          # reload cluster in pqsl
 ```
 
+## sql in command line
+```bash
+createdb -U alice -p 5432 -h localhost -d customers   # create new database for customers
+createdb -U alice customers                            # create new database for customers
+dropdb -U alice customers     # drop database
+createuser -U postgres -P -s ali                       # create new user -P(password) -s(not super user) -S(super user)
+createuser -U postgres --interactive                       # create new user with asking questions
+dropuser -U postgres ali                                    # drop user ali
+```
 
 ## sql inside psql
 ```bash
 create database customers owner alice;            # create new database
 drop database customers;                          # drop database
+create user ali login superuser password '123';    # create new user
+revoke connect on database customers from public;      # revoke all permissions from public(not super uers)
+drop user ali;                                    # drop user (if uesr created table we get error)
+create schema fincance;                           # create new schema
+create schema authorization ali;                       # create schema belong to user ali (sql selects with same table names will search inside this schema) ==> search_path
+create table fincance.customer(id int);                  # create table in fincance scheama
+select * from pg_tables where tablename='customer';      # check all tables in diff schemas with this name
+drop schema fincance;                            # drop schema
+drop schema fincance cascade;                    # drop schema with all dependencies (force)
 ```
 
 # psql comands
 ```bsah
+\! echo 'hello world'                        # terminal command by \!
 exit or \q                                   # exit psql
 \l                                          # list databases
 \conninfo                                   # information about current database
 \c postgres                                 # connect to database default database 
+\du                                         # list all users
+\dn                                         # list all schemas
 ```
 ### types of shotdown
 1. Smart ===>disallows new connection but let existing setions work noramally
@@ -253,4 +267,20 @@ host all all ::0/0 reject                                # ::0/0 means all ip ad
 host all all 127.0.0.1/32 trust                           # 127.0.0.1/32 means localhost and md5 means trust means password not required 
 ```
 
+## privliges
+privileges are used to control what users can do with what database
+there are two types of privileges
+1. cluster level: granted by super user
+2. object level: granted by super user or owner
 
+
+```bash
+alter user ali with nosuperuser;                            # change user privileges (\du)
+alter user ali createdb;                                    # cluster privileges
+grant select on customers to ali;                           # grant or rovoke object level privilage to other user
+grant connect on database customers to ali;                 # grant cluster level privilage to other user
+grant usage on schema fincance to ali;                      # grant cluster level privilage to other user
+grant all privileges on all tables in schema fincance to ali;             # grant cluster level privilage to other user
+grant select (col1), insert (col2) on customers to ali;    # grant object level privilage to other user
+revoke select on customers from public;                        # revoke object level privilage from all users
+```
