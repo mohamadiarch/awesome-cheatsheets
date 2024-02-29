@@ -108,6 +108,7 @@ WHERE condition;
 
 ```sql
 DELETE FROM table_name WHERE condition;
+DELETE FROM table_name;           -- delete all rows
 ```
 
 ### TRUNCATE Table

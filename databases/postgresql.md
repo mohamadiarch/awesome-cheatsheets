@@ -199,6 +199,7 @@ pg_controldata                                # information about current cluste
 ```bash
 psql -U postgres -p 5432 -h localhost -d postgres     # connect to cluster -p: port -h: host -d: database
 psql -U postgres                                # -U for user. default user is postgres
+psql -U postgres -d customers -f 1.sql                     # import data from a file(write some insert sql in that file)
 show data_directory                              # show data directory
 show port                                       # show port
 show work_mem                                   # show work memory
@@ -240,13 +241,25 @@ drop schema fincance cascade;                    # drop schema with all dependen
 
 # psql comands
 ```bsah
+\?                                          # help
 \! echo 'hello world'                        # terminal command by \!
 exit or \q                                   # exit psql
 \l                                          # list databases
 \conninfo                                   # information about current database
 \c postgres                                 # connect to database default database 
-\du                                         # list all users
-\dn                                         # list all schemas
+\du                                         # describe list all users
+\dn                                         # describe list all schemas
+\di                                         # describe list all indexes
+\dt                                         # list all tables
+\dt+                                        # list all tables with detail
+\d customers                                  # describe table columns
+\df \dv \ds                                          # list all f:functions v:views s:sequences
+\g                                         # execute previous successful command
+\e                                         # edit previos command
+\ef inc                                          # edit function inc
+\timing                                        # timing on
+\o outfile.txt                                 # redirect output to outfile.txt
+\set AUTOCOMMIT off                            # disable autocommit after transactions. use [rollback] or [commit] command after that
 ```
 ### types of shotdown
 1. Smart ===>disallows new connection but let existing setions work noramally
@@ -283,4 +296,108 @@ grant usage on schema fincance to ali;                      # grant cluster leve
 grant all privileges on all tables in schema fincance to ali;             # grant cluster level privilage to other user
 grant select (col1), insert (col2) on customers to ali;    # grant object level privilage to other user
 revoke select on customers from public;                        # revoke object level privilage from all users
+```
+
+## pg_catalog
+PostgreSQL stores metadata information about the database and cluster in the pg_catalog schema
+| system schemas  | Descrtiption   |
+|-------------- | -------------- | 
+| pg_database    | stores general database info like \l     |
+|pg_tables|all tables in  postgresql|
+|pg_stat_database| contains stat information, how many transactions is currently run |
+|pg_tablespace| tablespace info|
+|pg_operator| all operator information|
+|pg_available_extenstion| list all available extenstions|
+|pg_shadow|all the users in the system like \du |
+|pg_timezone_names|list of timezones|
+|pg_logs|if transaction not completed will usefull|
+|pg_settings|where name='max_connections'|
+|pg_indexes||
+|pg_views|all schema and all views|
+|current_schema()|current schema|
+|current_user()||
+|current_database()||
+|current_setting('max_connections')||
+|pg_postmaster_start_time()||
+
+```bash
+select * from pg_database                 # display all databases info like \l
+select current_user()
+```
+
+## time
+```bash
+select now() as current;                  # set alias
+select( now() + interval '1 hour') an_hour_later    # one hour later [1 day, 2 hours 30 minutes] [+ -]
+
+```
+-----------------------------------------------------------
+## data types
+Boolean
+serial
+Character Types [ such as char, varchar, and text]
+Numeric Types [ such as integer and floating-point number]
+Temporal Types [ such as date, time, timestamp, and interval]
+UUID [ for storing UUID (Universally Unique Identifiers) ]
+Array [ for storing array strings, numbers, etc.]
+JSON [ stores JSON data]
+hstore [ stores key-value pair]
+Special Types [ such as network address and geometric data]
+
+## types of constraint
+NOT NULL Constraint [Ensures that a column cannot have NULL value.] 
+UNIQUE Constraint [Ensures that all values in a column are different.] 
+PRIMARY Key [Not NULL Constraint + UNIQUE Constraint] 
+FOREIGN Key [ Constrains data based on columns in other tables.]
+CHECK Constraint [ The CHECK constraint ensures that all values in a column satisfy certain conditions.]
+EXCLUSION Constraint[ensures that if any two rows are compared on the specified column(s) or expression(s) using the specified operator(s), not all of these comparisons will return TRUE.]
+
+## tanble inheritance
+child table inherits all columns from parent table
+
+```bash
+CREATE TABLE child_table (col1, col2) INHERITS (parent_table);
+SELECT * FROM parent_table;                                       # display all columns from parent table and child records
+SELECT * FROM ONLY parent_table;                                       # display columns of only parent
+UPDATE parent SET col1 = 'val1';                                     # update parent table and child tables also
+UPDATE ONLY parent SET col1 = 'val1';                                     # update only parent table
+DROP TABLE parent;                                               # we can not delete parent table if it has child
+DROP TABLE parent cascade;                                               # delete parent table and its child forcefully
+```
+
+## table partitioning
+splitting tables into smaller pieces (performance)
+postgresql supports table partitioning via table inheritance and also with range, list and hash partitioning methods
+master table is better to do not hold any data
+we should create a trigger function to do the partitioning to run before inserting data
+
+```bash
+CREATE TABLE child_table (CHECK (col1 > 0 and COL1 <100)) INHERITS (parent_table); 
+CREAT INDEX index_name ON table_name using btree(col1)                         # btree is defulat [optional]
+
+```
+
+## copy table
+```bash
+CREATE TABLE new_table AS old_table;                       # copy structure and the data
+CREATE TABLE new_table AS SELECT * FROM old_table;
+CREATE TABLE new_table AS old_table WITH NO DATA;                       # copy structure and no data
+```
+
+## TableSpace
+postgresql stores data logically in tablespace and physicaly in data files, so tablespace does not hold any data (just a pointer)
+postgresql uses tablespace for map a logical name to physical location on disk
+default location of tablespace is data directory 
+```bash
+pg_default                                                  #stores all user data
+pg_global                                                   #stores all global data
+select * from pg_tablespace;                                # display all tablespaces 
+CREATE TABLESPACE tablespace_name LOCATION '/path/to/tablespace';   # create a new tablespace
+CREATR TABLE table_name(col1 , col2) TABLESPACE tablespace_name;    # create a table inside tablespace
+ALTER TABLE table_name SET TABLESPACE tablespace_name;             # change tablespace of a table
+SELECT pg_relation_filepath('table_name');    # where is table located
+############
+CREATE TABLESPACE tablespace_temp_name OWNER username LOCATION '/path/to/tablespace';    # create a temporary tablespace
+set temp_tablespaces = 'tablespace_temp_name';          # set in postgresql.conf, postgresql will create this folder automatically and delete after shutdown the database
+############
 ```
