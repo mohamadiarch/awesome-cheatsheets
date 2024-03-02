@@ -401,3 +401,19 @@ CREATE TABLESPACE tablespace_temp_name OWNER username LOCATION '/path/to/tablesp
 set temp_tablespaces = 'tablespace_temp_name';          # set in postgresql.conf, postgresql will create this folder automatically and delete after shutdown the database
 ############
 ```
+
+## Backup
+1. logical backup: simple textual representation
+2. physical backup : in binary format and not human readable
+    - online backup: the backup is taken when the system in up
+    - offline backup: the backup is taken when the system in down
+
+#### logical backup
+databases less than 100GB are good for logical backups
+save into sql script file
+```bash
+pg_dump -U user -d database > ./backup.sql                # dump a database
+pg_dumpall -U user > ./backup.sql                         # dump all databases (cluster) [user should be superuser]
+pg_dumpall -U user -f ./backup.sql                        # dump all databases -f for file
+pg_dumpall | gzip > /opt/user_backups/clusterall_bkz.gz   # dump cluster and compress it
+```
