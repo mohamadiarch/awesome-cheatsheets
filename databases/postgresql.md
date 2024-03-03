@@ -103,7 +103,7 @@ metadata information about changes to the acutal data and it is sufficent for re
 all transactions are written first before commit happens
 wal data is stored in a physical disk in location: "WAL segment"
 wal writer flushed the wal data from the buffer to wal segment
-wal files write ahead log files
+wal files: Write Ahead Log files
 
 
 log files:
@@ -403,17 +403,72 @@ set temp_tablespaces = 'tablespace_temp_name';          # set in postgresql.conf
 ```
 
 ## Backup
-1. logical backup: simple textual representation
+we do not have a specific command to backup a database
+1. logical backup: simple textual representation ==> save into sql script file
 2. physical backup : in binary format and not human readable
     - online backup: the backup is taken when the system in up
     - offline backup: the backup is taken when the system in down
 
 #### logical backup
 databases less than 100GB are good for logical backups
-save into sql script file
 ```bash
-pg_dump -U user -d database > ./backup.sql                # dump a database
+pg_dump -U user -d database > ./backup.sql                # dump a database (textaul by default)
+pg_dump -U user -Fc > ./backup.dump                      # create a custome dump -F (format) -c(custome dump so non textaul and human readable)
 pg_dumpall -U user > ./backup.sql                         # dump all databases (cluster) [user should be superuser]
 pg_dumpall -U user -f ./backup.sql                        # dump all databases -f for file
 pg_dumpall | gzip > /opt/user_backups/clusterall_bkz.gz   # dump cluster and compress it
+pg_dumpall | split -b 100m - /opt/backup/cluster_bkz                                # 100g (GB) 100k(KB)
+###########----Backup---#############
+CREATE DATABASE mydatabase;                    # for backup we should first create that database
+psql -U postgres -d mydatabase < ./backup.sql   # restore backup
+###########----Backup---#############
+# pg_restore can not restore from textaul file but can restore from custome file backup
+# we can restore a table or whole db
+pg_restore -U user -d database_name -t table_name ./backup.dump            # restore table from backup.
 ```
+
+#### physical backup 1.offline
+the database should be shutdown in order to get a usable backup ==> not good for production
+the database should be shutdown before restoring date
+partial store or single table sotre not possible ==> entire cluster
+```bash
+pg_ctl stop                                           # stop cluster
+tar -cvzf ./backup.tar /car/lib/psql/14/data .  # tar backup the data directly
+```
+#### physical backup 2.online 
+continuous backup ==> good for production
+PITR ==> point in time recovery
+
+```bash
+###########-----archiving wal files---- ##################
+show archive_mode;                                       # show status of archive mode
+# stop cluster with "pg_ctl stop;" and change below parametes in postgresql.conf 
+###
+wal_level=replica
+archive_mode = on
+archive_command = 'copy "%p" "C:\\archieve\\%f" '    # copy wal into archive windows  %f=name of the file
+archive_command = 'cp -i %p /opt/archieve/%f'    # copy wal into archive linux
+####
+select pg_start_backup('test1')                 # [you can give any name like test1] before start backup,checking wal files getting copied or not?
+selct pg_stop_backup()                         # write all required wal files
+# archive files work in conjunction with wal full backup inorder to resotre a database until certain time
+# Base backup is critical and without that wal files are useless
+######## -----1.method one: low level api backup---- #############
+pg_start_backup('test1',false,false)                       # return the control back to user for firt parameter, non exclusive backup for second parameter
+tar -cvzf ./backup.tar /var/lib/psql/14/data .  # tar backup the data directly, but current wal file will not archive [its ok]
+select pg_stop_backup('f')                  # f for non exclusive, t for exclusive [archiveing all wal files even current wal file]
+########-----2.method two: pg_base_backup------##########
+# full backup:data_directory + wal files
+# wen con not use this method for restoring one database or on object, we just restore the whole cluster bvz this is not a dump file, this is binary
+pg_basebackup -U user -h host -D "C:\\path\\to\\backup" -Ft -z -P -Xs                  # -Ft(format tar), -Fp(format palin text) -z(gzip) -P (progress bar) -X(all data with all transactions during the time of backup) -s(stream)
+```
+
+## PITR (Recovery)
+
+
+
+
+
+
+
+
