@@ -169,6 +169,10 @@ data directory= creating a data cluster consist of creating the directories in w
 we have to first initilize the storge area on the disk before we any operation on the database
 
 
+## windows vs linux
+in windows we should use "" double cotation but in linux not
+in windows we should use `-U user` but in linux we should login as this user
+
 ## start cluster in linux
 ```bash
 su -u postgres                                         # change user
@@ -199,7 +203,7 @@ pg_controldata                                # information about current cluste
 ```bash
 psql -U postgres -p 5432 -h localhost -d postgres     # connect to cluster -p: port -h: host -d: database
 psql -U postgres                                # -U for user. default user is postgres
-psql -U postgres -d customers -f 1.sql                     # import data from a file(write some insert sql in that file)
+psql -U postgres -d customers -f 1.sql                     # import data from a file(write some insert sql in that file) or \i 1.sql
 show data_directory                              # show data directory
 show port                                       # show port
 show work_mem                                   # show work memory
@@ -260,6 +264,7 @@ exit or \q                                   # exit psql
 \timing                                        # timing on
 \o outfile.txt                                 # redirect output to outfile.txt
 \set AUTOCOMMIT off                            # disable autocommit after transactions. use [rollback] or [commit] command after that
+\i 1.sql                                       # import sql file
 ```
 ### types of shotdown
 1. Smart ===>disallows new connection but let existing setions work noramally
@@ -331,6 +336,8 @@ select now() as current;                  # set alias
 select( now() + interval '1 hour') an_hour_later    # one hour later [1 day, 2 hours 30 minutes] [+ -]
 
 ```
+
+# SQL
 -----------------------------------------------------------
 ## data types
 Boolean
@@ -364,7 +371,7 @@ UPDATE ONLY parent SET col1 = 'val1';                                     # upda
 DROP TABLE parent;                                               # we can not delete parent table if it has child
 DROP TABLE parent cascade;                                               # delete parent table and its child forcefully
 ```
-
+-----------------------------------------------------
 ## table partitioning
 splitting tables into smaller pieces (performance)
 postgresql supports table partitioning via table inheritance and also with range, list and hash partitioning methods
@@ -443,13 +450,13 @@ PITR ==> point in time recovery
 ###########-----archiving wal files---- ##################
 show archive_mode;                                       # show status of archive mode
 # stop cluster with "pg_ctl stop;" and change below parametes in postgresql.conf 
-###
+###postgres.conf
 wal_level=replica
 archive_mode = on
 archive_command = 'copy "%p" "C:\\archieve\\%f" '    # copy wal into archive windows  %f=name of the file
 archive_command = 'cp -i %p /opt/archieve/%f'    # copy wal into archive linux
 ####
-select pg_start_backup('test1')                 # [you can give any name like test1] before start backup,checking wal files getting copied or not?
+# select pg_start_backup('test1')                 # [you can give any name like test1] before start backup,checking wal files getting copied or not?
 selct pg_stop_backup()                         # write all required wal files
 # archive files work in conjunction with wal full backup inorder to resotre a database until certain time
 # Base backup is critical and without that wal files are useless
@@ -460,11 +467,51 @@ select pg_stop_backup('f')                  # f for non exclusive, t for exclusi
 ########-----2.method two: pg_base_backup------##########
 # full backup:data_directory + wal files
 # wen con not use this method for restoring one database or on object, we just restore the whole cluster bvz this is not a dump file, this is binary
+selct pg_switch_wal()                         #   for check archive mode is working or not
 pg_basebackup -U user -h host -D "C:\\path\\to\\backup" -Ft -z -P -Xs                  # -Ft(format tar), -Fp(format palin text) -z(gzip) -P (progress bar) -X(all data with all transactions during the time of backup) -s(stream)
 ```
 
 ## PITR (Recovery)
 
+**Steps to perform PITR**
+1. `select pg_switch_wal();`  for save all transactions after the backup and before the stopping of database [note: you do not need to do this in real time bcz there will be lots of transactions which are happening in the backend and your wal buffer will get full like 16MB and the log switch will happen automatically]
+2. stop the server ==> pg_ctl stop
+3. copy the whole old cluster data directory and any tablespaces into a temp file ==> mv
+4. remove all directories and files from cluster data directory
+5. restore the databases from backup [copy basebackup to data directory]
+6. remove old files present in pg_wal directory in the file system backup [they are old]
+7. if there are any unarchived Wal segment files recovered from crashed cluster, copy them to pg_wal directory
+8. set postgres.conf
+9. create an empty file recovery.signal in the cluster data directory [ for version 12 before its different] [tell postgres start recovery]
+10. temporary modify pg_hba.conf to prevent ordinary users from connecting
+11. start the server. the server will go into recovery mode and proceed to read through the archived WAl files it needs
+12. `select pg_wal_reply_resume()`  for start restore
+13. Upon completion of the recovery process, the server will remove recovery.siganl
+14. Inspect the contents of the database to ensure the recovered database is in desired state
+15. modify pg_hba.conf to allow users to connect to the database
+
+
+```bash
+####postgres.conf
+# find the location from archive_command
+restore_command = 'copy "C:\\archieve\\%f" "%p"'    # all the archive files will be retrive from this location in windows
+restore_command = 'cp -i /opt/archieve/%f %p'    # copy wal into archive linux
+Recovery_Target_Inclusive = specifies whether to stop the recovery just after the target is reacheed(on) or just before the recover target(off). [default is on]
+# we should set one of this below recovery ways
+#######--------wayas-----########---------------------------------------------
+# If you set more than one way you will get error
+Recovery_Target_Time = "2000-01-01 00:00:00 EDT"                  #specifies the time upto which recovery will proceed [*IMP]
+###----LSN-----###
+Recovery_Target_Lsn = output of up select command                     #Lsn = Log Seqence Number [Recover until this LSN]
+select pg_current_wal_lsn(), pg_walfile_name(pg_current_wal_lsn())  #show current wal lsn
+# LSN: whenever the logs are getting generated, a sequence number is assigned to each log
+# Recovery_Target_Lsn specifies the LSN pf wrote ahead log location up to which reocvery will proceed
+###----LSN-----###
+Recovery_Target = immediate               # specifies the reocvery should end as soon as consistent state is reached [one value]
+Recovery_Target_Name =specifies the named restore            # restore point name [point(create with pg_create_restore_point)]
+Recovery_Target_Xid = specifies the transaction id upto which recovery will proceed
+#######--------wayas-----########---------------------------------------------
+```
 
 
 
