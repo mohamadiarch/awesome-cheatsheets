@@ -7,25 +7,33 @@ kafka cluster = kafka server(broker) + zookeeper
 ```bash
 bin/zookeeper-server-start.sh config/zookeeper.properties  # start Zookeeper in port 2181
 bin/kafka-server-start.sh config/server.properties         # start Kafka server(broker) in port 9092
-bin/kafka-topice                                            # not run just show arguments
-bin/kafka-topice --create --bootstrap-server localhost:9092 --topic name_of_topice  # create a new topic
-bin/kafka-topice --list --bootstrap-server localhost:9092      # list all available topics
-bin/kafka-topice --list --zookeeper localhost:2181           # list all available topics
-bin/kafka-topice --describe --zookeeper localhost:2181 --topic name_of_topice  # describe configuration of topic, 1.pratitionCount: number of folders per topic, 2.ReplicationFactor: the number of servers where data will store 3. details for every partition[ number of folders +  id of broker by default is zero]
+bin/kafka-topice.sh --create --bootstrap-server localhost:9092 replication-factor 1 partitions 3 --topic name_of_topice  # create a new topic with three folder in /tmp/kafka-logs
+bin/kafka-topice.sh                                            # not run just show arguments
+bin/kafka-topice.sh --create --bootstrap-server localhost:9092 --topic name_of_topice  # create a new topic with default arguements
+bin/kafka-topice.sh --list --bootstrap-server localhost:9092      # list all available topics
+bin/kafka-topice.sh --list --zookeeper localhost:2181           # list all available topics
+bin/kafka-topice.sh --describe --bootstrap-server localhost:2181 --topic name_of_topice          # describe a topic
+bin/kafka-topice.sh --describe --zookeeper localhost:2181 --topic name_of_topice  # describe configuration of topic, 1.pratitionCount: number of folders per topic, 2.ReplicationFactor: the number of servers where data will store 3. details for every partition[ number of folders +  id of broker by default is zero]
 # ReplicationFactor: if we have three servers every message will ne stores in every of three servers, so if one server can not be available the others can
 bin/kafka-console-producer.sh --broker-list localhost:9092 --topic name_of_topice  # connect to broker for writting messages
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic name_of_topice  # connect to broker for reading just new messages
 bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic name_of_topice --from-beginning  # connect to broker for reading messages from beginning (all messages) [if you run another consumer, the new consumer can read message too]
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic name_of_topice --group GROUP --from-beginning # connect to broker with consumer group
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --list  # list consumer groups 
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --describe --group GROUP # describe consumer group
 bin/kafka-server-stop.sh                                      # stop Kafka server
-
+rm -rf /tmp/zookeeper & rm-rf /tmp/kafka-logs & rm -rf yourpath/kafka/logs   # delete logs in kafka
 ```
 ## Facts
 1. We can run multiple producers and consumers at the same time with same arguments at termial. but producers and consumers do not know about each other
 2. if you stop one consumer, it will not stop other consumers and producers and vise versa.[they do just a  snigle job]
 3. kafka does not store messages forever and after specific time/size will delete messages called *log retention period*[ default: 7days, 10MB ]
 4. every consumer must be part of the consumer group with random id. ex: console-soncumer-1534 in logs
-5. every topic has a unique name and every message inside of a topic has a unique number called offset. These numbers is immutable. And every new messages append to the end offset list. first message in each topic has offset 0 and consumers start reading messages starting form specific offset.[ --from-beginning ==> number zero]
+5. every topic has a unique name and every message inside of a topic has a unique number called offset. These numbers is immutable. And every new messages append to the end offset list. first message in each topic has offset 0 and consumers start reading messages starting form specific offset.When consumer connects to kafka cluster you are able to specify a specific offset number you want to start reading message from.[ --from-beginning ==> number zero]
 6. Producers decides which partition to choose to write message inside that.
+7. consumers can connect to one or multiple topices but usually they connect to only one topice
+8. consumers can are able to consume messages from multiple partitions
+9. if multiple consumers connect the one topice they belong to one consumer group,In such case every single message will be consumed only by one of the consumers in the consume group.
 
 ### folder contents
 ```bash
@@ -90,3 +98,7 @@ automatically be zookeeper. and if the controller fail then new controller elect
 controller create different partitions, assign them to diffenre brokers, reassign in sace of faluire broker, and if there was a replication 
 configuration on the topic level controller selecet leader for specific partition and select forwards. If leader fail controller decides next leader.
 If one broker fail, controller will reassaing the partition of fail broker to a remain broker. controller elect leader partition.
+
+
+
+
